@@ -1,0 +1,27 @@
+// Apply the java plugin to add support for Java
+apply plugin: 'java'
+apply plugin: 'idea'
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'org.slf4j:slf4j-simple:1.6.4'
+    compile 'org.jboss.netty:netty:3.2.10.Final'
+    compile ('org.hornetq:hornetq-jms-client:2.4.7.Final')
+    compile 'com.rabbitmq:amqp-client:3.6.1'
+    compile 'org.apache.activemq:activemq-core:5.7.0'
+    testCompile 'junit:junit:4.12'
+}
+
+task execute(type:JavaExec) {
+   main = "demo.benchmark.JmsProvidersBenchmarkMain"
+   classpath = sourceSets.main.runtimeClasspath
+   args System.getProperty("exec.args").split()
+}
