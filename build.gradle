@@ -21,8 +21,15 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-task execute(type:JavaExec) {
-   main = "demo.benchmark.JmsProvidersBenchmarkMain"
-   classpath = sourceSets.main.runtimeClasspath
-   args System.getProperty("exec.args").split()
+task execute(type: JavaExec) {
+    main = "demo.benchmark.JmsProvidersBenchmarkMain"
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties = [
+            "enqueue_count": "1000",
+            "broker_type": "HORNETQ",
+            "protocol": "STOMP",
+    ]
+    if (project.hasProperty('jvmArgs')) {
+        jvmArgs project.jvmArgs.split('\\s+')
+    }
 }
