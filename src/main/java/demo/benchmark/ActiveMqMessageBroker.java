@@ -7,8 +7,12 @@ import javax.jms.Session;
 
 public class ActiveMqMessageBroker extends AbstractMessageBroker {
 
-    @Override public void createConnection() throws JMSException {
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+    public ActiveMqMessageBroker(String port) throws JMSException {
+        createConnection(port);
+    }
+
+    @Override public void createConnection(String port) throws JMSException {
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:" + port);
         connection = factory.createConnection();
         connection.start();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
