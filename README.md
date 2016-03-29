@@ -1,6 +1,6 @@
-# jms-amqp-providers-benchmark - WIP
+# messaging-providers-benchmark - WIP
 
-Running simple benchmark for different JMS/AMQP providers.
+Running simple benchmark for different messaging (Jms/Non-Jms) providers.
 
 ## TODO:
 - Create scripts (preferably Docker) in order to download/install a standalone instance of these providers to run this benchmark against.
@@ -16,3 +16,5 @@ Running simple benchmark for different JMS/AMQP providers.
    -    ```gradle execute -PjvmArgs="-Dbroker_type=ACTIVEMQ -Dprotocol=STOMP -Denqueue_count=10000"```
 - Broker Type: RabbitMq, protocol: AMQP, Enqueue count: 100
    -    ```gradle execute -PjvmArgs="-Dbroker_type=RABBITMQ -Dprotocol=AMQP -Denqueue_count=100"```
+- Broker Type: Kafka, Enqueue count: 100
+   -    ```gradle execute -PjvmArgs="-Dbroker_type=KAFKA -Denqueue_count=100"```
