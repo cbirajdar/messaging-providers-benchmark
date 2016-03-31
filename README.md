@@ -5,6 +5,7 @@ Running simple benchmark for different messaging (Jms/Non-Jms) providers.
 ## TODO:
 - Create scripts (preferably Docker) in order to download/install a standalone instance of these providers to run this benchmark against.
 - Create an interface to run the benchmark against an embedded instance and add acceptors for stomp, amqp etc.
+- Externalize application settings using properties file
 - Persistent vs non-persistent message delivery
 
 ## How to run the benchmark
