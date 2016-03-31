@@ -6,6 +6,7 @@ import javax.jms.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 
 abstract class AbstractMessageBroker implements Loggable {
@@ -36,7 +37,7 @@ abstract class AbstractMessageBroker implements Loggable {
         MessageProducer messageProducer = session.createProducer(queue);
         Runnable runnable = () -> {
             long startTime = System.currentTimeMillis();
-            IntStream.range(0, enqueue_count).forEach(i -> send(messageProducer, String.valueOf(i)));
+            stream(enqueue_count, i -> send(messageProducer, String.valueOf(i)));
             long endTime = System.currentTimeMillis();
             log().info("******** Time to Enqueue: {} ********", endTime - startTime);
         };
@@ -47,7 +48,7 @@ abstract class AbstractMessageBroker implements Loggable {
         MessageConsumer messageConsumer = session.createConsumer(queue);
         Runnable runnable = () -> {
             long startTime = System.currentTimeMillis();
-            IntStream.range(0, enqueue_count).forEach(i -> receive(messageConsumer));
+            stream(enqueue_count, i -> receive(messageConsumer));
             long endTime = System.currentTimeMillis();
             log().info("******** Time to Dequeue: {} ********", endTime - startTime);
         };
@@ -55,7 +56,11 @@ abstract class AbstractMessageBroker implements Loggable {
     }
 
     protected void submit(int numberOfThreads, Runnable runnable) {
-        IntStream.range(0, numberOfThreads).forEach(i -> executorService.submit(runnable));
+        stream(numberOfThreads, i -> executorService.submit(runnable));
+    }
+
+    protected void stream(int n, IntConsumer action) {
+        IntStream.range(0, n).forEach(action);
     }
 
     private void send(MessageProducer messageProducer, String data) {
