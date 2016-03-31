@@ -25,9 +25,10 @@ abstract class AbstractMessageBroker implements Loggable {
 
     final Integer consumerThreads = Integer.valueOf(System.getProperty("consumer_threads"));
 
-    ExecutorService executorService;
+    private ExecutorService executorService;
 
     public void createThreadPoolExecutor() {
+        log().info("Creating ThreadPoolExecutor with Producer Threads: {}, Consumer Threads: {}.", producerThreads, consumerThreads);
         executorService = Executors.newFixedThreadPool(producerThreads + consumerThreads);
     }
 
@@ -35,32 +36,25 @@ abstract class AbstractMessageBroker implements Loggable {
 
     public void enqueue() throws Exception {
         MessageProducer messageProducer = session.createProducer(queue);
-        Runnable runnable = () -> {
-            long startTime = System.currentTimeMillis();
-            stream(enqueue_count, i -> send(messageProducer, String.valueOf(i)));
-            long endTime = System.currentTimeMillis();
-            log().info("******** Time to Enqueue: {} ********", endTime - startTime);
-        };
+        Runnable runnable = () -> stream(enqueue_count, i -> send(messageProducer, String.valueOf(i)), "Enqueue");
         submit(producerThreads, runnable);
     }
 
     public void dequeue() throws Exception {
         MessageConsumer messageConsumer = session.createConsumer(queue);
-        Runnable runnable = () -> {
-            long startTime = System.currentTimeMillis();
-            stream(enqueue_count, i -> receive(messageConsumer));
-            long endTime = System.currentTimeMillis();
-            log().info("******** Time to Dequeue: {} ********", endTime - startTime);
-        };
+        Runnable runnable = () -> stream(enqueue_count, i -> receive(messageConsumer), "Dequeue");
         submit(consumerThreads, runnable);
     }
 
     protected void submit(int numberOfThreads, Runnable runnable) {
-        stream(numberOfThreads, i -> executorService.submit(runnable));
+        IntStream.range(0, numberOfThreads).forEach(i -> executorService.submit(runnable));
     }
 
-    protected void stream(int n, IntConsumer action) {
+    protected void stream(int n, IntConsumer action, String type) {
+        long startTime = System.currentTimeMillis();
         IntStream.range(0, n).forEach(action);
+        long endTime = System.currentTimeMillis();
+        log().info("******** Time to {}: {} ********", type, endTime - startTime);
     }
 
     private void send(MessageProducer messageProducer, String data) {
@@ -82,7 +76,6 @@ abstract class AbstractMessageBroker implements Loggable {
 
     public void closeConnection() throws Exception {
         waitForThreadPoolTermination();
-        log().info("Closing connection....");
         connection.close();
     }
 
@@ -96,5 +89,6 @@ abstract class AbstractMessageBroker implements Loggable {
                 }
             }
         }
+        log().info("Closing connection....");
     }
 }
