@@ -17,8 +17,4 @@ COPY build/libs/messaging-providers-benchmark.jar .
 
 COPY src/main/resources/logging.properties .
 
-CMD java -jar apache-activemq-5.13.2/bin/activemq.jar start
-
-CMD java -Dbroker_type=ACTIVEMQ -Dprotocol=OPEN_WIRE -Denqueue_count=1000 -Dlog4j.configuration=file:"./logging.properties" -jar messaging-providers-benchmark.jar
-
-CMD java -jar apache-activemq-5.13.2/bin/activemq.jar stop
+CMD java -jar apache-activemq-5.13.2/bin/activemq.jar start &

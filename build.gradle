@@ -36,7 +36,9 @@ task execute(type: JavaExec) {
             "enqueue_count": "1000",
             "broker_type": "HORNETQ",
             "protocol": "STOMP",
-            "log4j.configuration" : "file:./src/main/resources/logging.properties"
+            "log4j.configuration" : "file:./src/main/resources/logging.properties",
+            "producer_threads": 1,
+            "consumer_threads": 1
     ]
     if (project.hasProperty('jvmArgs')) {
         jvmArgs project.jvmArgs.split('\\s+')
