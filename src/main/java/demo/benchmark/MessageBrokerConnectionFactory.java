@@ -16,7 +16,7 @@ public class MessageBrokerConnectionFactory implements Loggable {
         } else if (type.equals(MessageBrokerType.ACTIVEMQ)) {
             return new ActiveMqMessageBroker(port);
         } else if (type.equals(MessageBrokerType.RABBITMQ)) {
-            return new RabbitMqMessageBroker(port);
+            return new RabbitMqMessageBroker(Protocol.AMQP.getPort());
         } else if (type.equals(MessageBrokerType.KAFKA)) {
             return new KafkaMessageBroker(Protocol.KAFKA.getPort());
         }
