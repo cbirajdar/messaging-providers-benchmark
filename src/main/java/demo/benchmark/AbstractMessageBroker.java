@@ -82,8 +82,7 @@ abstract class AbstractMessageBroker implements Loggable {
     protected void waitForThreadPoolTermination() {
         while (true) {
             if (executorService instanceof ThreadPoolExecutor) {
-                int count = ((ThreadPoolExecutor) executorService).getActiveCount();
-                if (count == 0) {
+                if (((ThreadPoolExecutor) executorService).getActiveCount() == 0) {
                     executorService.shutdownNow();
                     break;
                 }
