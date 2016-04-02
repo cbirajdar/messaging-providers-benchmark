@@ -29,7 +29,7 @@ Before running the benchmark for a given broker type, you need to get it running
    - ```kafka-server-start /usr/local/etc/kafka/server.properties```
 
 ###Docker
-Installation details for Docker (MacOS) - https://docs.docker.com/engine/installation/mac/
+Installation details for Docker- https://docs.docker.com/engine/installation/
 
 <i>Please refer to the documentation on how to build, run, stop, remove containers and images.</i>
 
