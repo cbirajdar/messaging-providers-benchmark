@@ -8,8 +8,8 @@ Running simple benchmark for different messaging (Jms/Non-Jms) providers.
 - Externalize application settings using properties file
 - Persistent vs non-persistent message delivery
 
-##How to Install different queues
-####HomeBrew
+##Installation
+###HomeBrew
 If you are on MacOS, you can install these systems using homebrew
 
 Steps to install and documentation - http://brew.sh/
@@ -28,10 +28,10 @@ Before running the benchmark for a given broker type, you need to get it running
    - ```zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties```
    - ```kafka-server-start /usr/local/etc/kafka/server.properties```
 
-####Docker
+###Docker
 Installation details for Docker (MacOS) - https://docs.docker.com/engine/installation/mac/
 
-<I>Please refer to the documentation on how to build, run, stop, remove containers and images.
+<i>Please refer to the documentation on how to build, run, stop, remove containers and images.</i>
 
 There are already built docker images available for Hornetq and ActiveMq but it probably won't have (STOMP|AMQP) acceptors already configured.
 
