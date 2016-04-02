@@ -38,7 +38,8 @@ task execute(type: JavaExec) {
             "protocol": "STOMP",
             "log4j.configuration" : "file:./src/main/resources/logging.properties",
             "producer_threads": 1,
-            "consumer_threads": 1
+            "consumer_threads": 1,
+            "host_name": "localhost"
     ]
     if (project.hasProperty('jvmArgs')) {
         jvmArgs project.jvmArgs.split('\\s+')

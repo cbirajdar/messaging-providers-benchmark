@@ -17,7 +17,7 @@ public class RabbitMqMessageBroker extends AbstractMessageBroker {
 
     @Override public void createConnection(String port) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(hostname);
         connection = factory.newConnection();
         channel = connection.createChannel();
         channel.queueDeclare(QUEUE, false, false, false, null);

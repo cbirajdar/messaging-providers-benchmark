@@ -13,8 +13,6 @@ COPY hornetq-configuration.xml .
 
 RUN mv hornetq-configuration.xml hornetq-2.4.0.Final/config/stand-alone/non-clustered/hornetq-configuration.xml
 
-COPY build/libs/messaging-providers-benchmark.jar .
-
 RUN cd hornetq-2.4.0.Final/bin
 
 CMD ./run.sh

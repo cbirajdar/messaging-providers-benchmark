@@ -19,11 +19,13 @@ abstract class AbstractMessageBroker implements Loggable {
 
     final String QUEUE = "TestQueue";
 
-    final Integer enqueue_count = Integer.valueOf(System.getProperty("enqueue_count"));
+    final int enqueue_count = Integer.valueOf(System.getProperty("enqueue_count"));
 
-    final Integer producerThreads = Integer.valueOf(System.getProperty("producer_threads"));
+    final int producerThreads = Integer.valueOf(System.getProperty("producer_threads"));
 
-    final Integer consumerThreads = Integer.valueOf(System.getProperty("consumer_threads"));
+    final int consumerThreads = Integer.valueOf(System.getProperty("consumer_threads"));
+
+    final String hostname = System.getProperty("host_name");
 
     private ExecutorService executorService;
 

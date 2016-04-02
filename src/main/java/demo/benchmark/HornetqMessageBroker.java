@@ -19,7 +19,7 @@ public class HornetqMessageBroker extends AbstractMessageBroker {
     @Override public void createConnection(String port) throws JMSException {
         Map<String, Object> cParams = new HashMap<String, Object>() {{
             put(TransportConstants.PORT_PROP_NAME, port);
-            put(TransportConstants.HOST_PROP_NAME, "localhost");
+            put(TransportConstants.HOST_PROP_NAME, hostname);
 
         }};
         TransportConfiguration configuration = new TransportConfiguration(NettyConnectorFactory.class.getName(), cParams);
