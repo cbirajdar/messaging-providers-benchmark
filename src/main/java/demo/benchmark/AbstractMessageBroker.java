@@ -1,5 +1,6 @@
 package demo.benchmark;
 
+import demo.benchmark.database.DatabaseServer;
 import demo.benchmark.logging.Loggable;
 
 import javax.jms.*;
@@ -29,9 +30,24 @@ abstract class AbstractMessageBroker implements Loggable {
 
     private ExecutorService executorService;
 
-    public void createThreadPoolExecutor() {
+    private DatabaseServer dbServer;
+
+    public DatabaseServer getDbServer() {
+        return dbServer;
+    }
+
+    public void init() {
+        createThreadPoolExecutor();
+        startMongoInMemoryDatabase();
+    }
+
+    private void createThreadPoolExecutor() {
         log().info("Creating ThreadPoolExecutor with Producer Threads: {}, Consumer Threads: {}.", producerThreads, consumerThreads);
         executorService = Executors.newFixedThreadPool(producerThreads + consumerThreads);
+    }
+
+    private void startMongoInMemoryDatabase() {
+        dbServer = new DatabaseServer();
     }
 
     public abstract void createConnection(String port) throws Exception;
@@ -56,7 +72,7 @@ abstract class AbstractMessageBroker implements Loggable {
         long startTime = System.currentTimeMillis();
         IntStream.range(0, n).forEach(action);
         long endTime = System.currentTimeMillis();
-        log().info("******** Time to {}: {} ********", type, endTime - startTime);
+        dbServer.insertResults(type, endTime - startTime);
     }
 
     private void send(MessageProducer messageProducer, String data) {
