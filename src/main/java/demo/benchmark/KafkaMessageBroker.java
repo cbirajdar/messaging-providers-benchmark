@@ -26,7 +26,7 @@ public class KafkaMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void createConnection(String port) {
-        String host = String.join(hostname, ":", port);
+        String host = String.join(":", hostname, port);
         createProducer(host);
         createConsumer(host);
     }

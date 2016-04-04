@@ -3,10 +3,11 @@
 Running simple benchmark for different messaging (Jms/Non-Jms) providers.
 
 ## TODO:
-- Create scripts (preferably Docker) in order to <i>download/install/start/stop</i> the standalone instance of these providers to run this benchmark against.
 - Create an interface to run the benchmark against an embedded instance and add acceptors for stomp, amqp etc.
 - Externalize application settings using properties file
 - Persistent vs non-persistent message delivery
+- Different payload sizes
+- Aggregate results from multiple producers and consumers
 
 ##Installation
 ###HomeBrew
@@ -51,6 +52,7 @@ There are already built docker images available for Hornetq and ActiveMq but it 
 ## How to run the benchmark
 
 For running against docker container, add -Dhost_name=${docker_host}
+For setting multiple producers or consumers, add -Dproducer_threads=2 or -Dconsumer_threads=2
 
 - ```git clone git@github.com:cbirajdar/messaging-providers-benchmark.git```
 - Broker Type: Hornetq, protocol: OPEN_WIRE, Enqueue count: 1000
