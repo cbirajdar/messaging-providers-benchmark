@@ -4,7 +4,6 @@ Running simple benchmark for different messaging (Jms/Non-Jms) providers.
 
 ## TODO:
 - Create an interface to run the benchmark against an embedded instance and add acceptors for stomp, amqp etc.
-- Externalize application settings using properties file
 - Persistent vs non-persistent message delivery
 - Different payload sizes
 
@@ -63,3 +62,5 @@ For setting multiple producers or consumers, add -Dproducer_threads=2 or -Dconsu
    -    ```gradle execute -PjvmArgs="-Dbroker_type=RABBITMQ -Dprotocol=AMQP -Denqueue_count=100"```
 - Broker Type: Kafka, Enqueue count: 100
    -    ```gradle execute -PjvmArgs="-Dbroker_type=KAFKA -Denqueue_count=100"```
+
+Or you can set the defaults in [application.properties] (https://github.com/cbirajdar/messaging-providers-benchmark/application.properties) and simply run as ```gradle execute```
