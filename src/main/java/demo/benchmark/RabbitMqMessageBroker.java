@@ -5,13 +5,13 @@ import com.rabbitmq.client.*;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class RabbitMqMessageBroker extends AbstractMessageBroker {
+class RabbitMqMessageBroker extends AbstractMessageBroker {
 
     private Connection connection;
 
     private Channel channel;
 
-    public RabbitMqMessageBroker(String port) throws Exception {
+    RabbitMqMessageBroker(String port) throws Exception {
         createConnection(port);
     }
 

@@ -15,13 +15,13 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.util.Collections;
 import java.util.Properties;
 
-public class KafkaMessageBroker extends AbstractMessageBroker {
+class KafkaMessageBroker extends AbstractMessageBroker {
 
     private KafkaProducer<Integer, String> producer;
 
     private KafkaConsumer<Integer, String> consumer;
 
-    public KafkaMessageBroker(String port) {
+    KafkaMessageBroker(String port) {
         createConnection(port);
     }
 

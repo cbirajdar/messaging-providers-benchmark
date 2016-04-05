@@ -10,9 +10,9 @@ import javax.jms.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HornetqMessageBroker extends AbstractMessageBroker {
+class HornetqMessageBroker extends AbstractMessageBroker {
 
-    public HornetqMessageBroker(String port) throws JMSException {
+    HornetqMessageBroker(String port) throws JMSException {
         createConnection(port);
     }
 
