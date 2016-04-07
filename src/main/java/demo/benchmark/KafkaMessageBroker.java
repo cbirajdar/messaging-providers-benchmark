@@ -1,5 +1,9 @@
 package demo.benchmark;
 
+import kafka.consumer.Consumer;
+import kafka.consumer.ConsumerTimeoutException;
+import kafka.consumer.KafkaStream;
+import kafka.javaapi.consumer.ConsumerConnector;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -12,14 +16,16 @@ import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import java.util.Collections;
-import java.util.Properties;
+import java.util.*;
 
 class KafkaMessageBroker extends AbstractMessageBroker {
 
     private KafkaProducer<Integer, String> producer;
 
     private KafkaConsumer<Integer, String> consumer;
+
+    // For reading messaging using byte streams
+    private ConsumerConnector consumerConnector;
 
     KafkaMessageBroker(String port) {
         createConnection(port);
@@ -29,6 +35,7 @@ class KafkaMessageBroker extends AbstractMessageBroker {
         String host = String.join(":", hostname, port);
         createProducer(host);
         createConsumer(host);
+        createConsumerConnector(host);
     }
 
     private void createProducer(String host) {
@@ -58,16 +65,29 @@ class KafkaMessageBroker extends AbstractMessageBroker {
         consumer = new KafkaConsumer<>(props);
     }
 
+    private ConsumerConnector createConsumerConnector(String host) {
+        Properties props = new Properties();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, host);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "TestConsumer");
+        props.put("zookeeper.connect", "localhost:2181");
+        props.put("zookeeper.session.timeout.ms", "400");
+        props.put("zookeeper.sync.time.ms", "300");
+        props.put("auto.commit.interval.ms", "1000");
+        props.put("consumer.timeout.ms", "1000");
+        return Consumer.createJavaConsumerConnector(new kafka.consumer.ConsumerConfig(props));
+    }
+
     @Override public void enqueue() {
         Runnable runnable = () -> stream(enqueue_count, i -> producer.send(new ProducerRecord<>(QUEUE, i, String.valueOf(i))), "Enqueue");
         submit(producerThreads, runnable);
     }
 
     @Override public void dequeue() {
+        // consumeMessagesWithKafkaStreams();
         consumer.subscribe(Collections.singletonList(QUEUE));
         Runnable runnable = () -> {
             while(true) {
-                ConsumerRecords<Integer, String> records = consumer.poll(1000);
+                ConsumerRecords<Integer, String> records = consumer.poll(5000);
                 log().info("Received: {}", records.count());
                 if (records.count() == 0) break;
                 for (ConsumerRecord<Integer, String> record : records) {
@@ -76,6 +96,23 @@ class KafkaMessageBroker extends AbstractMessageBroker {
             }
         };
         submit(consumerThreads, runnable);
+    }
+
+    private void consumeMessagesWithKafkaStreams() {
+        //TODO: Figure out how to reset offset after consuming messages
+        Map<String, Integer> topicMap = new HashMap<String, Integer>() {{ put(QUEUE, consumerThreads); }};
+        List<KafkaStream<byte[], byte[]>> streams = consumerConnector.createMessageStreams(topicMap).get(QUEUE);
+        for (KafkaStream<byte[], byte[]> stream : streams) {
+            try {
+                while (stream.iterator().hasNext()) {
+                    log().info("Received value: {}", new String(stream.iterator().next().message()));
+                }
+            } catch (ConsumerTimeoutException e) {
+                log().error("Consumer timed out.", e);
+            } finally {
+                consumerConnector.shutdown();
+            }
+        }
     }
 
     @Override public void closeConnection() {
