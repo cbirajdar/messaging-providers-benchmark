@@ -63,4 +63,4 @@ For setting multiple producers or consumers, add -Dproducer_threads=2 or -Dconsu
 - Broker Type: Kafka, Enqueue count: 100
    -    ```gradle execute -PjvmArgs="-Dbroker_type=KAFKA -Denqueue_count=100"```
 
-Or you can set the defaults in [application.properties] (https://github.com/cbirajdar/messaging-providers-benchmark/application.properties) and simply run as ```gradle execute```
+Or you can set the defaults in [application.properties] (https://github.com/cbirajdar/messaging-providers-benchmark/blob/master/application.properties) and simply run as ```gradle execute```
