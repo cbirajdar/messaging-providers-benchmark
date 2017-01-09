@@ -15,6 +15,4 @@ RUN sed -e 's/stomp/tcp/2' -e 's/amqp/tcp/2' apache-activemq-5.13.2/conf/activem
 
 COPY build/libs/messaging-providers-benchmark.jar .
 
-COPY src/main/resources/logging.properties .
-
 CMD java -jar apache-activemq-5.13.2/bin/activemq.jar start &
