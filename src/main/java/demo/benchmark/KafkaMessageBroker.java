@@ -34,7 +34,7 @@ public class KafkaMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void enqueue() {
-        Runnable runnable = () ->  stream(enqueue_count, i -> producer.send(new ProducerRecord<>(QUEUE, "Test", "Test")));
+        Runnable runnable = () -> stream(enqueue_count, i -> producer.send(new ProducerRecord<>(QUEUE, "Test", "Test")), "Enqueue");
         submit(producerThreads, runnable);
     }
 
@@ -43,6 +43,7 @@ public class KafkaMessageBroker extends AbstractMessageBroker {
         Runnable runnable = () -> {
             ConsumerRecords<String, String> records = consumer.poll(1000);
             for (ConsumerRecord<String, String> record : records) {
+                record.value(); //Do something with the value
             }
         };
         submit(consumerThreads, runnable);
@@ -50,7 +51,6 @@ public class KafkaMessageBroker extends AbstractMessageBroker {
 
     @Override public void closeConnection() {
         waitForThreadPoolTermination();
-        log().info("Closing producer and consumer");
         producer.close();
         consumer.close();
     }
