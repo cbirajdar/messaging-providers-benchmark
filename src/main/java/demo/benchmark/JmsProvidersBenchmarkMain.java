@@ -8,8 +8,9 @@ import javax.jms.JMSException;
 public class JmsProvidersBenchmarkMain {
 
     public static void main(String[] args) throws JMSException {
-        MessageBrokerType type = MessageBrokerType.valueOf(args[0]);
-        AbstractMessageBroker messageBroker = new MessageBrokerConnectionFactory().createMessageBroker(type, Protocol.STOMP);
+        MessageBrokerType type = MessageBrokerType.isValid(System.getProperty("broker_type"));
+        Protocol protocol = Protocol.isValid(System.getProperty("protocol"));
+        AbstractMessageBroker messageBroker = new MessageBrokerConnectionFactory().createMessageBroker(type, protocol);
         messageBroker.enqueue();
         messageBroker.dequeue();
         messageBroker.closeConnection();
