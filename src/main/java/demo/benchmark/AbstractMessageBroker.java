@@ -1,14 +1,12 @@
 package demo.benchmark;
 
-import org.apache.activemq.transport.stomp.StompConnection;
+import demo.benchmark.logging.Loggable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 
-abstract class AbstractMessageBroker {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+abstract class AbstractMessageBroker implements Loggable {
 
     Connection connection;
 
@@ -18,7 +16,7 @@ abstract class AbstractMessageBroker {
 
     final String QUEUE = "TestQueue";
 
-    public abstract void createConnection() throws JMSException;
+    public abstract void createConnection(String port) throws JMSException;
 
     public void enqueue() throws JMSException {
         long startTime = System.currentTimeMillis();
@@ -27,7 +25,7 @@ abstract class AbstractMessageBroker {
             messageProducer.send(session.createTextMessage(String.valueOf(i)));
         }
         long endTime = System.currentTimeMillis();
-        log.info("******** Time to Enqueue: {} ********", endTime - startTime);
+        log().info("******** Time to Enqueue: {} ********", endTime - startTime);
     }
 
     public void dequeue() throws JMSException {
@@ -37,10 +35,11 @@ abstract class AbstractMessageBroker {
             messageConsumer.receive();
         }
         long endTime = System.currentTimeMillis();
-        log.info("******** Time to Dequeue: {} ********", endTime - startTime);
+        log().info("******** Time to Dequeue: {} ********", endTime - startTime);
     }
 
     public void closeConnection() throws JMSException {
+        log().info("Closing connection....");
         connection.close();
     }
 }

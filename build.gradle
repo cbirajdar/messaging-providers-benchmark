@@ -14,9 +14,10 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.7'
     compile 'org.slf4j:slf4j-simple:1.6.4'
     compile 'org.jboss.netty:netty:3.2.10.Final'
-    compile ('org.hornetq:hornetq-jms-client:2.4.7.Final')
+    compile 'org.hornetq:hornetq-jms-client:2.4.7.Final'
     compile 'com.rabbitmq:amqp-client:3.6.1'
     compile 'org.apache.activemq:activemq-core:5.7.0'
+    compile 'org.apache.commons:commons-lang3:3.4'
     testCompile 'junit:junit:4.12'
 }
 
