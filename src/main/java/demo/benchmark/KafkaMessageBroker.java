@@ -10,7 +10,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.stream.IntStream;
 
 public class KafkaMessageBroker extends AbstractMessageBroker {
 
@@ -35,9 +34,7 @@ public class KafkaMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void enqueue() {
-        Runnable runnable = () -> {
-            IntStream.range(0, enqueue_count).forEach(i -> producer.send(new ProducerRecord<>(QUEUE, "Test", "Test")));
-        };
+        Runnable runnable = () ->  stream(enqueue_count, i -> producer.send(new ProducerRecord<>(QUEUE, "Test", "Test")));
         submit(producerThreads, runnable);
     }
 

@@ -4,7 +4,6 @@ import com.rabbitmq.client.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.IntStream;
 
 public class RabbitMqMessageBroker extends AbstractMessageBroker {
 
@@ -25,10 +24,7 @@ public class RabbitMqMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void enqueue() {
-        Runnable runnable = () -> {
-            IntStream.range(0, enqueue_count).forEach(i -> publish(String.valueOf(i)));
-        };
-        submit(producerThreads, runnable);
+        submit(producerThreads, () -> stream(enqueue_count, i -> publish(String.valueOf(i))));
     }
 
     private void publish(String data) {
@@ -41,10 +37,7 @@ public class RabbitMqMessageBroker extends AbstractMessageBroker {
 
     @Override public void dequeue() throws IOException {
         Consumer consumer = new DefaultConsumer(channel);
-        Runnable runnable = () -> {
-            IntStream.range(0, enqueue_count).forEach(i -> consume(consumer));
-        };
-        submit(consumerThreads, runnable);
+        submit(consumerThreads, () -> stream(enqueue_count, i -> consume(consumer)));
     }
 
     private void consume(Consumer consumer) {
