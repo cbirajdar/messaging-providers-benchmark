@@ -50,22 +50,28 @@ public class KafkaMessageBroker extends AbstractMessageBroker {
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "10000");
+        props.put(ConsumerConfig.CLIENT_ID_CONFIG, "TestProducer");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumer = new KafkaConsumer<>(props);
     }
 
     @Override public void enqueue() {
-        Runnable runnable = () -> stream(enqueue_count, i -> producer.send(new ProducerRecord<>(QUEUE, i, "Test")), "Enqueue");
+        Runnable runnable = () -> stream(enqueue_count, i -> producer.send(new ProducerRecord<>(QUEUE, i, String.valueOf(i))), "Enqueue");
         submit(producerThreads, runnable);
     }
 
     @Override public void dequeue() {
         consumer.subscribe(Collections.singletonList(QUEUE));
         Runnable runnable = () -> {
-            ConsumerRecords<Integer, String> records = consumer.poll(1000);
-            for (ConsumerRecord<Integer, String> record : records) {
-                log().info(record.value()); //Do something with the value
+            while(true) {
+                ConsumerRecords<Integer, String> records = consumer.poll(1000);
+                log().info("Received: {}", records.count());
+                if (records.count() == 0) break;
+                for (ConsumerRecord<Integer, String> record : records) {
+                    // log().info(record.value()); //Do something with the value
+                }
             }
         };
         submit(consumerThreads, runnable);
