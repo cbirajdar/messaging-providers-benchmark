@@ -13,6 +13,4 @@ RUN mv apache-activemq-5.13.2/conf/activemq.xml apache-activemq-5.13.2/conf/acti
 
 RUN sed -e 's/stomp/tcp/2' -e 's/amqp/tcp/2' apache-activemq-5.13.2/conf/activemq.xml.orig >> apache-activemq-5.13.2/conf/activemq.xml
 
-COPY build/libs/messaging-providers-benchmark.jar .
-
-CMD java -jar apache-activemq-5.13.2/bin/activemq.jar start &
+CMD java -jar apache-activemq-5.13.2/bin/activemq.jar start

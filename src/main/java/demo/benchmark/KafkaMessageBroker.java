@@ -26,26 +26,27 @@ public class KafkaMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void createConnection(String port) {
-        createProducer(port);
-        createConsumer(port);
+        String host = String.join(hostname, ":", port);
+        createProducer(host);
+        createConsumer(host);
     }
 
-    private void createProducer(String port) {
+    private void createProducer(String host) {
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:" + port);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, host);
         props.put(ProducerConfig.CLIENT_ID_CONFIG, "TestProducer");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         producer = new KafkaProducer<>(props);
     }
 
-    private void createConsumer(String port) {
+    private void createConsumer(String host) {
         /*
          * Properties based on example the following example,
          * https://github.com/apache/kafka/blob/trunk/examples/src/main/java/kafka/examples/Consumer.java
          */
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:" + port);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, host);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "TestConsumer");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
