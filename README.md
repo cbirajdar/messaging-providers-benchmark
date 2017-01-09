@@ -9,7 +9,7 @@ Running simple benchmark for different messaging (Jms/Non-Jms) providers.
 
 ## How to run the benchmark
 
-- ```git clone git@github.com:cbirajdar/jms-amqp-providers-benchmark.git```
+- ```git clone git@github.com:cbirajdar/messaging-providers-benchmark.git```
 - Broker Type: Hornetq, protocol: OPEN_WIRE, Enqueue count: 1000
    -    ```gradle execute -PjvmArgs="-Dbroker_type=HORNETQ -Dprotocol=OPEN_WIRE -Denqueue_count=1000"```
 - Broker Type: ActiveMq, protocol: STOMP, Enqueue count: 10000
