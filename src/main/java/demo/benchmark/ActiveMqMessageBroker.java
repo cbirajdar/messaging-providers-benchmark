@@ -5,9 +5,9 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-public class ActiveMqMessageBroker extends AbstractMessageBroker {
+class ActiveMqMessageBroker extends AbstractMessageBroker {
 
-    public ActiveMqMessageBroker(String port) throws JMSException {
+    ActiveMqMessageBroker(String port) throws JMSException {
         createConnection(port);
     }
 
