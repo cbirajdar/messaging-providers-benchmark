@@ -3,9 +3,11 @@ package demo.benchmark.enums;
 import java.util.Arrays;
 
 public enum MessageBrokerType {
+
     HORNETQ,
     ACTIVEMQ,
-    RABBITMQ;
+    RABBITMQ,
+    KAFKA;
 
     public static MessageBrokerType isValid(String type) {
         for (MessageBrokerType brokerType : MessageBrokerType.values()) {

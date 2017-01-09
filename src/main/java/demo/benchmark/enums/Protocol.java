@@ -6,7 +6,8 @@ public enum Protocol {
 
     OPEN_WIRE("61616"),
     STOMP("61613"),
-    AMQP("5672");
+    AMQP("5672"),
+    KAFKA("9092");
 
     private final String port;
 
