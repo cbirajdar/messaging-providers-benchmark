@@ -1,9 +1,5 @@
 package demo.benchmark;
 
-import kafka.admin.AdminUtils;
-import kafka.utils.ZKStringSerializer;
-import kafka.utils.ZKStringSerializer$;
-import org.I0Itec.zkclient.ZkClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -11,11 +7,10 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.common.utils.CollectionUtils;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Properties;
+import java.util.stream.IntStream;
 
 public class KafkaMessageBroker extends AbstractMessageBroker {
 
@@ -40,20 +35,25 @@ public class KafkaMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void enqueue() {
-        for (int i = 0; i < enqueue_count; i++) {
-            producer.send(new ProducerRecord<>(QUEUE, "Test", "Test"));
-        }
+        Runnable runnable = () -> {
+            IntStream.range(0, enqueue_count).forEach(i -> producer.send(new ProducerRecord<>(QUEUE, "Test", "Test")));
+        };
+        submit(producerThreads, runnable);
     }
 
     @Override public void dequeue() {
         consumer.subscribe(Arrays.asList(QUEUE));
-        ConsumerRecords<String, String> records = consumer.poll(1000);
-        for (ConsumerRecord<String, String> record : records) {
-            log().info("Received message: {}", record.value());
-        }
+        Runnable runnable = () -> {
+            ConsumerRecords<String, String> records = consumer.poll(1000);
+            for (ConsumerRecord<String, String> record : records) {
+            }
+        };
+        submit(consumerThreads, runnable);
     }
 
     @Override public void closeConnection() {
+        waitForThreadPoolTermination();
+        log().info("Closing producer and consumer");
         producer.close();
         consumer.close();
     }

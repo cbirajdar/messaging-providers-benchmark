@@ -1,11 +1,12 @@
 package demo.benchmark;
 
 import demo.benchmark.logging.Loggable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
-import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.IntStream;
 
 abstract class AbstractMessageBroker implements Loggable {
 
@@ -19,30 +20,76 @@ abstract class AbstractMessageBroker implements Loggable {
 
     final Integer enqueue_count = Integer.valueOf(System.getProperty("enqueue_count"));
 
+    final Integer producerThreads = Integer.valueOf(System.getProperty("producer_threads"));
+
+    final Integer consumerThreads = Integer.valueOf(System.getProperty("consumer_threads"));
+
+    ExecutorService executorService;
+
+    public void createThreadPoolExecutor() {
+        executorService = Executors.newFixedThreadPool(producerThreads + consumerThreads);
+    }
+
     public abstract void createConnection(String port) throws Exception;
 
     public void enqueue() throws Exception {
-        long startTime = System.currentTimeMillis();
         MessageProducer messageProducer = session.createProducer(queue);
-        for (int i = 0; i < enqueue_count; i++) {
-            messageProducer.send(session.createTextMessage(String.valueOf(i)));
-        }
-        long endTime = System.currentTimeMillis();
-        log().info("******** Time to Enqueue: {} ********", endTime - startTime);
+        Runnable runnable = () -> {
+            long startTime = System.currentTimeMillis();
+            IntStream.range(0, enqueue_count).forEach(i -> send(messageProducer, String.valueOf(i)));
+            long endTime = System.currentTimeMillis();
+            log().info("******** Time to Enqueue: {} ********", endTime - startTime);
+        };
+        submit(producerThreads, runnable);
     }
 
     public void dequeue() throws Exception {
-        long startTime = System.currentTimeMillis();
         MessageConsumer messageConsumer = session.createConsumer(queue);
-        for (int i = 0; i < enqueue_count; i++) {
-            messageConsumer.receive();
+        Runnable runnable = () -> {
+            long startTime = System.currentTimeMillis();
+            IntStream.range(0, enqueue_count).forEach(i -> receive(messageConsumer));
+            long endTime = System.currentTimeMillis();
+            log().info("******** Time to Dequeue: {} ********", endTime - startTime);
+        };
+        submit(consumerThreads, runnable);
+    }
+
+    protected void submit(int numberOfThreads, Runnable runnable) {
+        IntStream.range(0, numberOfThreads).forEach(i -> executorService.submit(runnable));
+    }
+
+    private void send(MessageProducer messageProducer, String data) {
+        try {
+            messageProducer.send(session.createTextMessage(String.valueOf(data)));
+        } catch (Exception e) {
+            log().error("Error sending data to the queue", e);
         }
-        long endTime = System.currentTimeMillis();
-        log().info("******** Time to Dequeue: {} ********", endTime - startTime);
+    }
+
+    private void receive(MessageConsumer messageConsumer) {
+        try {
+            messageConsumer.receive();
+        } catch (Exception e) {
+            log().error("Error consuming data from the queue", e);
+        }
+
     }
 
     public void closeConnection() throws Exception {
+        waitForThreadPoolTermination();
         log().info("Closing connection....");
         connection.close();
+    }
+
+    protected void waitForThreadPoolTermination() {
+        while (true) {
+            if (executorService instanceof ThreadPoolExecutor) {
+                int count = ((ThreadPoolExecutor) executorService).getActiveCount();
+                if (count == 0) {
+                    executorService.shutdownNow();
+                    break;
+                }
+            }
+        }
     }
 }
