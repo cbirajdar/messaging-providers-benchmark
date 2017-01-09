@@ -100,11 +100,10 @@ abstract class AbstractMessageBroker implements Loggable {
 
     private void receive(MessageConsumer messageConsumer) {
         try {
-            messageConsumer.receive();
+            messageConsumer.receive().acknowledge();
         } catch (Exception e) {
             log().error("Error consuming data from the queue", e);
         }
-
     }
 
     public void closeConnection() throws Exception {
