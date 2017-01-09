@@ -13,10 +13,11 @@ public class JmsProvidersBenchmarkMain {
         MessageBrokerType type = MessageBrokerType.isValid(System.getProperty("broker_type"));
         Protocol protocol = Protocol.isValid(System.getProperty("protocol"));
         AbstractMessageBroker messageBroker = new MessageBrokerConnectionFactory().createMessageBroker(type, protocol);
-        messageBroker.createThreadPoolExecutor();
+        messageBroker.init();
         messageBroker.enqueue();
         messageBroker.dequeue();
         messageBroker.closeConnection();
+        messageBroker.getDbServer().printResults();
     }
 
 }
