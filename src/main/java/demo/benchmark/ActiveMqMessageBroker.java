@@ -12,7 +12,7 @@ public class ActiveMqMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void createConnection(String port) throws JMSException {
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(String.join("tcp://", hostname, ":port"));
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://" + hostname + ":" + port);
         connection = factory.createConnection();
         connection.start();
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
