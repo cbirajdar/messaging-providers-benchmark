@@ -29,14 +29,16 @@ abstract class AbstractMessageBroker implements Loggable {
 
     int consumerThreads;
 
+    int numberOfIterations;
+
     final String QUEUE = "TestQueue";
 
     private ExecutorService executorService;
 
     private DatabaseServer dbServer;
 
-    public DatabaseServer getDbServer() {
-        return dbServer;
+    public void setDbServer(DatabaseServer dbServer) {
+        this.dbServer = dbServer;
     }
 
     public AbstractMessageBroker() {
@@ -44,25 +46,18 @@ abstract class AbstractMessageBroker implements Loggable {
         enqueueCount = intVal(getProperty("enqueue_count"));
         producerThreads = intVal(getProperty("producer_threads"));
         consumerThreads = intVal(getProperty("consumer_threads"));
-    }
-
-    public void init() {
-        createPayload();
-        createThreadPoolExecutor();
-        startMongoInMemoryDatabase();
-    }
-
-    private void createPayload() {
+        numberOfIterations = intVal(getProperty("number_of_iterations"));
         payload = StringUtils.repeat("*", intVal(getProperty("payload_size")));
+    }
+
+    public void init(int i) {
+        log().info("Running Iteration Number: {}", i);
+        createThreadPoolExecutor();
     }
 
     private void createThreadPoolExecutor() {
         log().info("Creating ThreadPoolExecutor with Producer Threads: {}, Consumer Threads: {}.", producerThreads, consumerThreads);
         executorService = Executors.newFixedThreadPool(producerThreads + consumerThreads);
-    }
-
-    private void startMongoInMemoryDatabase() {
-        dbServer = new DatabaseServer();
     }
 
     public abstract void createConnection(String port) throws Exception;
@@ -107,7 +102,8 @@ abstract class AbstractMessageBroker implements Loggable {
     }
 
     public void closeConnection() throws Exception {
-        waitForThreadPoolTermination();
+        log().info("Closing connection....");
+        session.close();
         connection.close();
     }
 
@@ -120,7 +116,6 @@ abstract class AbstractMessageBroker implements Loggable {
                 }
             }
         }
-        log().info("Closing connection....");
     }
 
     private int intVal(String str) {

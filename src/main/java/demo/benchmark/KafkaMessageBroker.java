@@ -68,7 +68,6 @@ class KafkaMessageBroker extends AbstractMessageBroker {
         Runnable runnable = () -> {
             while(true) {
                 ConsumerRecords<Integer, String> records = consumer.poll(1000);
-                log().info("Received: {}", records.count());
                 if (records.count() == 0) break;
                 for (ConsumerRecord<Integer, String> record : records) {
                     // log().info(record.value()); //Do something with the value
@@ -79,7 +78,6 @@ class KafkaMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void closeConnection() {
-        waitForThreadPoolTermination();
         producer.close();
         consumer.close();
     }

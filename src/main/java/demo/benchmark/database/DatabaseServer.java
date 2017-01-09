@@ -34,18 +34,18 @@ public class DatabaseServer implements Loggable {
         collection.insertOne(document);
     }
 
-    public void printResults() {
+    public void printResults(int iterations) {
         long totalEnqueueTime = 0;
-        long totalDequeueTime = 0;
         for (Document document : collection.find()) {
             if (document.get("Enqueue") != null) {
                 totalEnqueueTime += Long.parseLong(document.get("Enqueue").toString());
-            } else {
-                totalDequeueTime += Long.parseLong(document.get("Dequeue").toString());
             }
         }
         log().info("******** Total time to Enqueue elements: {} ********", totalEnqueueTime);
-        log().info("******** Total time to Dequeue elements: {} ********", totalDequeueTime);
+        log().info("******** Average time to Enqueue elements: {} ********", totalEnqueueTime / iterations);
+    }
+
+    public void close() {
         client.close();
         server.shutdown();
     }

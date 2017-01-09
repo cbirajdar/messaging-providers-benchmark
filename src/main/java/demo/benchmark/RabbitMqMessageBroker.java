@@ -49,7 +49,6 @@ class RabbitMqMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void closeConnection() throws IOException, TimeoutException {
-        waitForThreadPoolTermination();
         channel.close();
         connection.close();
     }
