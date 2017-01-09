@@ -87,7 +87,7 @@ abstract class AbstractMessageBroker implements Loggable {
 
     private void send(MessageProducer messageProducer, String data) {
         try {
-            messageProducer.send(session.createTextMessage(String.valueOf(data)));
+            messageProducer.send(session.createTextMessage(data));
         } catch (Exception e) {
             log().error("Error sending data to the queue", e);
         }
@@ -109,11 +109,9 @@ abstract class AbstractMessageBroker implements Loggable {
 
     protected void waitForThreadPoolTermination() {
         while (true) {
-            if (executorService instanceof ThreadPoolExecutor) {
-                if (((ThreadPoolExecutor) executorService).getActiveCount() == 0) {
-                    executorService.shutdownNow();
-                    break;
-                }
+            if (((ThreadPoolExecutor) executorService).getActiveCount() == 0) {
+                executorService.shutdownNow();
+                break;
             }
         }
     }

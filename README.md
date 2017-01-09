@@ -1,4 +1,4 @@
-# messaging-providers-benchmark - WIP
+# messaging-providers-benchmark
 
 Running simple benchmark for different messaging (Jms/Non-Jms) providers.
 
