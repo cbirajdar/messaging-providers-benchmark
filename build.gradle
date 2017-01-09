@@ -34,15 +34,12 @@ jar {
 task execute(type: JavaExec) {
     main = "demo.benchmark.JmsProvidersBenchmarkMain"
     classpath = sourceSets.main.runtimeClasspath
-    systemProperties = [
-            "enqueue_count": "1000",
-            "broker_type": "HORNETQ",
-            "protocol": "STOMP",
-            "log4j.configuration" : "file:./src/main/resources/logging.properties",
-            "producer_threads": 5,
-            "consumer_threads": 3,
-            "host_name": "localhost"
-    ]
+    Properties properties = new Properties()
+    properties.load(new FileInputStream("$project.rootDir/application.properties"))
+    properties.forEach { key, value ->
+        systemProperty key, value
+    }
+    // Overrider application.properties using gradle execute -PjvmArgs="-Dproperty=value"
     if (project.hasProperty('jvmArgs')) {
         jvmArgs project.jvmArgs.split('\\s+')
     }
