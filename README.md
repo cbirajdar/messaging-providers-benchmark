@@ -5,7 +5,6 @@ Running simple benchmark for different messaging (Jms/Non-Jms) providers.
 ## TODO:
 - Create an interface to run the benchmark against an embedded instance and add acceptors for stomp, amqp etc.
 - Persistent vs non-persistent message delivery
-- Different payload sizes
 
 ##Installation
 ###HomeBrew

@@ -59,7 +59,7 @@ class KafkaMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void enqueue() {
-        Runnable runnable = () -> stream(enqueue_count, i -> producer.send(new ProducerRecord<>(QUEUE, i, String.valueOf(i))), "Enqueue");
+        Runnable runnable = () -> stream(enqueueCount, i -> producer.send(new ProducerRecord<>(QUEUE, i, payload)), "Enqueue");
         submit(producerThreads, runnable);
     }
 

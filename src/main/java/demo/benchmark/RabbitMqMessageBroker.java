@@ -24,7 +24,7 @@ class RabbitMqMessageBroker extends AbstractMessageBroker {
     }
 
     @Override public void enqueue() {
-        submit(producerThreads, () -> stream(enqueue_count, i -> publish(String.valueOf(i)), "Enqueue"));
+        submit(producerThreads, () -> stream(enqueueCount, i -> publish(payload), "Enqueue"));
     }
 
     private void publish(String data) {
@@ -37,7 +37,7 @@ class RabbitMqMessageBroker extends AbstractMessageBroker {
 
     @Override public void dequeue() throws IOException {
         Consumer consumer = new DefaultConsumer(channel);
-        submit(consumerThreads, () -> stream(enqueue_count, i -> consume(consumer), "Dequeue"));
+        submit(consumerThreads, () -> stream(enqueueCount, i -> consume(consumer), "Dequeue"));
     }
 
     private void consume(Consumer consumer) {

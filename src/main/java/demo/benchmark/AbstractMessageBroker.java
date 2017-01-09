@@ -2,6 +2,7 @@ package demo.benchmark;
 
 import demo.benchmark.database.DatabaseServer;
 import demo.benchmark.logging.Loggable;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.jms.*;
 import java.util.concurrent.ExecutorService;
@@ -18,15 +19,17 @@ abstract class AbstractMessageBroker implements Loggable {
 
     Session session;
 
+    String hostname;
+
+    String payload;
+
+    int enqueueCount;
+
+    int producerThreads;
+
+    int consumerThreads;
+
     final String QUEUE = "TestQueue";
-
-    final int enqueue_count = Integer.valueOf(System.getProperty("enqueue_count"));
-
-    final int producerThreads = Integer.valueOf(System.getProperty("producer_threads"));
-
-    final int consumerThreads = Integer.valueOf(System.getProperty("consumer_threads"));
-
-    final String hostname = System.getProperty("host_name");
 
     private ExecutorService executorService;
 
@@ -36,9 +39,21 @@ abstract class AbstractMessageBroker implements Loggable {
         return dbServer;
     }
 
+    public AbstractMessageBroker() {
+        hostname = getProperty("host_name");
+        enqueueCount = intVal(getProperty("enqueue_count"));
+        producerThreads = intVal(getProperty("producer_threads"));
+        consumerThreads = intVal(getProperty("consumer_threads"));
+    }
+
     public void init() {
+        createPayload();
         createThreadPoolExecutor();
         startMongoInMemoryDatabase();
+    }
+
+    private void createPayload() {
+        payload = StringUtils.repeat("*", intVal(getProperty("payload_size")));
     }
 
     private void createThreadPoolExecutor() {
@@ -54,13 +69,13 @@ abstract class AbstractMessageBroker implements Loggable {
 
     public void enqueue() throws Exception {
         MessageProducer messageProducer = session.createProducer(queue);
-        Runnable runnable = () -> stream(enqueue_count, i -> send(messageProducer, String.valueOf(i)), "Enqueue");
+        Runnable runnable = () -> stream(enqueueCount, i -> send(messageProducer, payload), "Enqueue");
         submit(producerThreads, runnable);
     }
 
     public void dequeue() throws Exception {
         MessageConsumer messageConsumer = session.createConsumer(queue);
-        Runnable runnable = () -> stream(enqueue_count, i -> receive(messageConsumer), "Dequeue");
+        Runnable runnable = () -> stream(enqueueCount, i -> receive(messageConsumer), "Dequeue");
         submit(consumerThreads, runnable);
     }
 
@@ -107,5 +122,13 @@ abstract class AbstractMessageBroker implements Loggable {
             }
         }
         log().info("Closing connection....");
+    }
+
+    private int intVal(String str) {
+        return Integer.valueOf(str);
+    }
+
+    private String getProperty(String key) {
+        return System.getProperty(key);
     }
 }

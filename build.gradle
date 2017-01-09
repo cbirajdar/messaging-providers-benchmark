@@ -19,12 +19,13 @@ dependencies {
     compile 'org.apache.kafka:kafka_2.10:0.9.0.1'
     compile 'de.bwaldvogel:mongo-java-server:1.6.0'
     compile 'org.mongodb:mongo-java-driver:3.2.2'
+    compile 'org.apache.commons:commons-lang3:3.4'
     testCompile 'junit:junit:4.12'
 }
 
 jar {
     manifest {
-        attributes('Main-Class': 'demo.benchmark.JmsProvidersBenchmarkMain')
+        attributes('Main-Class': 'demo.benchmark.MessagingProvidersBenchmarkMain')
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
@@ -32,7 +33,7 @@ jar {
 }
 
 task execute(type: JavaExec) {
-    main = "demo.benchmark.JmsProvidersBenchmarkMain"
+    main = "demo.benchmark.MessagingProvidersBenchmarkMain"
     classpath = sourceSets.main.runtimeClasspath
     Properties properties = new Properties()
     properties.load(new FileInputStream("$project.rootDir/application.properties"))
